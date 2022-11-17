@@ -1,0 +1,32 @@
+{
+    "product_details": [
+      {
+        "id": 1,
+        "name": "NHIS Day Wear Polo [Boys & Girls, Nursery-Grade 5]",
+        "size": 18,
+        "quantity": 2,
+        "price": 340,
+        "MRP": 450,
+        "discounts_total": 110,
+        "IGST": 34,
+        "discounts_percentage": "24.44",
+        "sub_total": 680,
+        "shipping_charges": 0,
+        "total": 741
+      },
+      {
+        "id": 2,
+        "name": "CIS Royal Day Wear (Grade 1-5)",
+        "size": 22,
+        "quantity": 1,
+        "price": 450,
+        "MRP": 749,
+        "discounts_total": 110,
+        "IGST": 22.4,
+        "discounts_percentage": "24.44",
+        "sub_total": 450,
+        "shipping_charges": 50,
+        "total": 522.5
+      }
+    ]
+  }

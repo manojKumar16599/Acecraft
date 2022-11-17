@@ -1,0 +1,33 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "firstName": "Manoj",
+            "lastName": "kumar",
+            "email": "kumar@gmail.com",
+            "password": "ram123456",
+            "parentName": "Mari",
+            "AdmissionNumber": "123"
+        },
+        {
+            "id": 2,
+            "firstName": "Manoj",
+            "lastName": "kumar",
+            "email": "manojkumar@gmail.com",
+            "password": "kumar1234",
+            "confirmPassword": "kumar1234",
+            "parentName": "Marimuthu",
+            "admissionNumber": "455"
+        },
+        {
+            "id": 3,
+            "firstName": "Pallavi",
+            "lastName": "kattari",
+            "email": "pallavi@gmail.com",
+            "password": "pallavi",
+            "confirmPassword": "pallavi",
+            "parentName": "kumar",
+            "admissionNumber": "234"
+        }
+    ]
+}
