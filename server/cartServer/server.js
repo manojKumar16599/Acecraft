@@ -3,6 +3,7 @@ var express = require('express'); // requre the express framework
 var app = express();
 const fs = require("fs");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 const http = require('http')
 const https = require('https')
 const qs = require('querystring')
@@ -91,8 +92,6 @@ app.delete('/deleteProduct', function (req, res) {
             }
         });
 
-        console.log("newObj", newObj)
-
         res.end(JSON.stringify(newObj));
 
         fs.writeFile(
@@ -141,10 +140,7 @@ app.delete('/deleteAddress', function (req, res) {
     const id = req?.query?.id;
     fs.readFile(__dirname + "/" + "address.json", 'utf8', function (err, data) {
         data = JSON.parse(data);
-        console.log("id", id, data)
         const newData = data?.filter(item => parseInt(id) !== item?.user_id);
-
-        console.log("newData", newData)
 
         res.end(JSON.stringify(newData));
 
@@ -170,7 +166,6 @@ const PaytmConfig = require('./config/config')
 const server = http.createServer()
 
 server.on('request', (req, res) => {
-    console.log("req.url", req.url)
     switch (req.url) {
 
         case "/checkout":
@@ -196,9 +191,7 @@ server.on('request', (req, res) => {
             }).on('data', (chunk) => {
                 body += chunk
             }).on('end', () => {
-                console.log("body", body)
                 let data = qs.parse(body)
-                console.log("data", data)
 
                 const paytmParams = {}
 
@@ -250,7 +243,6 @@ server.on('request', (req, res) => {
 
                         post_res.on('end', function () {
                             response = JSON.parse(response)
-                            console.log('txnToken:', response);
 
                             res.writeHead(200, { 'Content-Type': 'text/html' })
                             res.write(`<html>
@@ -344,80 +336,164 @@ server.on('request', (req, res) => {
         //         });
         //     })
 
-        case '/':
-            let callbackResponse = ''
+        // case '/':
+        //     let callbackResponse = ''
 
-            req.on('error', (err) => {
-                console.error(err.stack)
-            }).on('data', (chunk) => {
-                callbackResponse += chunk
-            }).on('end', () => {
-                let data = qs.parse(callbackResponse)
-                console.log(data)
+        //     req.on('error', (err) => {
+        //         console.error(err.stack)
+        //     }).on('data', (chunk) => {
+        //         callbackResponse += chunk
+        //     }).on('end', () => {
+        //         let data = qs.parse(callbackResponse)
+        //         console.log(data)
 
-                data = JSON.parse(JSON.stringify(data))
+        //         data = JSON.parse(JSON.stringify(data))
 
-                const paytmChecksum = data.CHECKSUMHASH
+        //         const paytmChecksum = data.CHECKSUMHASH
 
-                var isVerifySignature = PaytmChecksum.verifySignature(data, PaytmConfig.PaytmConfig.key, paytmChecksum)
-                if (isVerifySignature) {
-                    console.log("Checksum Matched");
+        //         var isVerifySignature = PaytmChecksum.verifySignature(data, PaytmConfig.PaytmConfig.key, paytmChecksum)
+        //         if (isVerifySignature) {
+        //             console.log("Checksum Matched");
 
-                    var paytmParams = {};
+        //             var paytmParams = {};
 
-                    paytmParams.body = {
-                        "mid": PaytmConfig.PaytmConfig.mid,
-                        "orderId": data.ORDERID,
-                    };
+        //             paytmParams.body = {
+        //                 "mid": PaytmConfig.PaytmConfig.mid,
+        //                 "orderId": data.ORDERID,
+        //             };
 
-                    PaytmChecksum.generateSignature(JSON.stringify(paytmParams.body), PaytmConfig.PaytmConfig.key).then(function (checksum) {
-                        paytmParams.head = {
-                            "signature": checksum
-                        };
+        //             PaytmChecksum.generateSignature(JSON.stringify(paytmParams.body), PaytmConfig.PaytmConfig.key).then(function (checksum) {
+        //                 paytmParams.head = {
+        //                     "signature": checksum
+        //                 };
 
-                        var post_data = JSON.stringify(paytmParams);
+        //                 var post_data = JSON.stringify(paytmParams);
 
-                        var options = {
+        //                 var options = {
 
-                            /* for Staging */
-                            hostname: 'securegw-stage.paytm.in',
+        //                     /* for Staging */
+        //                     hostname: 'securegw-stage.paytm.in',
 
-                            /* for Production */
-                            // hostname: 'securegw.paytm.in',
+        //                     /* for Production */
+        //                     // hostname: 'securegw.paytm.in',
 
-                            port: 443,
-                            path: '/v3/order/status',
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Content-Length': post_data.length
-                            }
-                        };
+        //                     port: 443,
+        //                     path: '/v3/order/status',
+        //                     method: 'POST',
+        //                     headers: {
+        //                         'Content-Type': 'application/json',
+        //                         'Content-Length': post_data.length
+        //                     }
+        //                 };
 
-                        // Set up the request
-                        var response = "";
-                        var post_req = https.request(options, function (post_res) {
-                            post_res.on('data', function (chunk) {
-                                response += chunk;
-                            });
+        //                 // Set up the request
+        //                 var response = "";
+        //                 var post_req = https.request(options, function (post_res) {
+        //                     post_res.on('data', function (chunk) {
+        //                         response += chunk;
+        //                     });
 
-                            post_res.on('end', function () {
-                                console.log('Response: ', response);
-                                res.write(response)
-                                res.end()
-                            });
-                        });
+        //                     post_res.on('end', function () {
+        //                         console.log('Response: ', response);
+        //                         res.write(response)
+        //                         res.end()
+        //                     });
+        //                 });
 
-                        // post the data
-                        post_req.write(post_data);
-                        post_req.end();
-                    });
-                } else {
-                    console.log("Checksum Mismatched");
-                }
-            })
+        //                 // post the data
+        //                 post_req.write(post_data);
+        //                 post_req.end();
+        //             });
+        //         } else {
+        //             console.log("Checksum Mismatched");
+        //         }
+        //     })
 
     }
+})
+
+
+
+const userdb = JSON.parse(fs.readFileSync("../users.json", "utf-8"));
+
+const SECRET_KEY = "123456789";
+
+const expiresIn = "1h";
+
+function createToken(payload) {
+    return jwt.sign(payload, SECRET_KEY, { expiresIn });
+};
+
+function isLoginAuthenticated({ email, password }) {
+    return (
+        userdb.users.findIndex(
+            (user) => user.email === email && user.password === password) !== -1
+    );
+}
+
+function isRegisterAuthenticated({ email }) {
+    return userdb.users.findIndex((user) => user.email === email) !== -1;
+}
+
+//Register endpoint
+app.post("/api/auth/register", (req, res) => {
+    const { email, password } = req.body;
+    let finalData;
+    if (isRegisterAuthenticated({ email })) {
+        const status = 401;
+        const message = "User is already exist";
+        res.status(status).json({ status, message });
+        return;
+    }
+
+    fs.readFile("../users.json", (err, data) => {
+        if (err) {
+            const status = 401;
+            const message = err;
+            res.status(status).json({ status, message });
+            return;
+        }
+        data = JSON.parse(data.toString());
+
+        let last_item_id = data.users[data.users.length - 1].id;
+
+        data.users.push({ id: last_item_id + 1, ...req.body });
+
+        finalData = data.users;
+
+        writeData = fs.writeFile(
+            "../users.json",
+            JSON.stringify(data),
+            (err, result) => {
+                if (err) {
+                    const status = 401;
+                    const message = err;
+                    res.status(status).json({ status, message });
+                    return;
+                }
+            }
+        )
+    })
+
+    //Access token creation
+    const access_token = createToken({ email, password });
+    res.status(200).json({ access_token });
+});
+
+
+//Login endpoint
+app.post("/api/auth/login", (req, res) => {
+    const { email, password } = req.body;
+    if (!isLoginAuthenticated({ email, password })) {
+        const status = 401;
+        const message = "Incorrect Email or Password";
+        res.status(status).json({ status, message });
+        return;
+    }
+
+    //Access token creation
+    const access_token = createToken({ email, password });
+    res.status(200).json({ access_token });
 })
 
 server.listen(3000, 'localhost', () => {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { Carousel } from 'react-responsive-carousel';
 import { useNavigate } from 'react-router-dom';
+import { get } from 'lodash'
 
 import ProductContent from './ProductContent';
 import { renderModalContent } from './SchoolGoods';
@@ -42,11 +43,11 @@ const ProductDetails = () => {
         }
 
         if (pathname.toLowerCase().includes('nhis')) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.name.toLowerCase().includes('nh') && !item.name.toLowerCase().includes('nhg') && item.url.toLowerCase() !== pathname)
+            schoolDetailsData = schoolDetailsData.filter(item => item.hasOwnProperty('name') && get(item, "name").toLowerCase().includes('nh') && !get(item, "name").toLowerCase().includes('nhg') && item.url.toLowerCase() !== pathname)
         }
 
         if (pathname.toLowerCase().includes('cis')) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.name.toLowerCase().includes('cis') && item.url.toLowerCase() !== pathname)
+            schoolDetailsData = schoolDetailsData.filter(item =>item.hasOwnProperty('name') && get(item, "name").toLowerCase().includes('cis') && item.url.toLowerCase() !== pathname)
         }
 
         schoolDetailsData.forEach((item, index) => {

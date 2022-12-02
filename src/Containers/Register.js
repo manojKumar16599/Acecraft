@@ -14,7 +14,7 @@ const Register = ({ type = "" }) => {
     }, [isLoginStatus, Navigate, type])
 
     const handleSubmit = (formProps) => {
-        axios.post("http://localhost:5000/api/auth/register", {
+        axios.post("http://localhost:8000/api/auth/register", {
             ...formProps
         }).then((res) => {
             localStorage.setItem(

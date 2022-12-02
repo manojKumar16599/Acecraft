@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, InputNumber, Modal, Select } from 'antd';
+import { get } from 'lodash'
 
 import { SCHOOL_5, SIZE_GUIDE } from '../../Media';
 import { schoolDetails } from './Utils';
@@ -39,27 +40,34 @@ const SchoolGoods = () => {
     const [isDisplayFilters, setIsDisplayFilters] = useState(false);
     const [productData, setProductData] = useState({});
     const [modalContent, setModalContent] = useState('');
-    const [finalArrData, setFinalArrData] = useState([]);
+    const [finalArrData, setFinalArrData] = useState(schoolDetails);
     const [priceFilter, setPriceFilter] = useState("");
     const [topFilterValue, setTopFilterValue] = useState({});
+
+
+    useEffect(() => {
+        if (schoolDetails.length) {
+            setFinalArrData(schoolDetails);
+        }
+    }, [schoolDetails]);
 
     const Navigate = useNavigate();
     const pathname = window.location.pathname.replace("/browse/", "");
 
-    const boyProducts = finalArrData.length ? finalArrData.filter(item => item.gender.includes("boys")) : schoolDetails.filter(item => item.gender.includes("boys"));
-    const girlProducts = finalArrData.length ? finalArrData.filter(item => !item.gender.includes("boys")) : schoolDetails.filter(item => !item.gender.includes("boys"));
-    const nh_grade_1 = finalArrData.length ? finalArrData.filter(item => item.grade.includes("nhg_1")) : schoolDetails.filter(item => item.grade.includes("nhg_1"));
-    const nh_grade_2 = finalArrData.length ? finalArrData.filter(item => !item.grade.includes("nhg_2")) : schoolDetails.filter(item => !item.grade.includes("nhg_2"));
-    const nh_grade_3 = finalArrData.length ? finalArrData.filter(item => item.grade.includes("nhg_3")) : schoolDetails.filter(item => item.grade.includes("nhg_3"));
-    const nh_grade_4 = finalArrData.length ? finalArrData.filter(item => !item.grade.includes("nhg_4")) : schoolDetails.filter(item => !item.grade.includes("nhg_4"));
+    const boyProducts = finalArrData.filter(item => item.hasOwnProperty('gender') && get(item, 'gender').includes("boys"));
+    const girlProducts = finalArrData.filter(item => item.hasOwnProperty('gender') && !get(item, 'gender').includes("boys"));
+    const nh_grade_1 = finalArrData.filter(item => item.hasOwnProperty('grade') && get(item, 'grade').includes("nhg_1"));
+    const nh_grade_2 = finalArrData.filter(item => item.hasOwnProperty('grade') && !get(item, 'grade').includes("nhg_2"));
+    const nh_grade_3 = finalArrData.filter(item => item.hasOwnProperty('grade') && get(item, 'grade').includes("nhg_3"));
+    const nh_grade_4 = finalArrData.filter(item => item.hasOwnProperty('grade') && !get(item, 'grade').includes("nhg_4"));
 
     useEffect(() => {
         if (pathname.toLowerCase() === "new-horizon-gurukul") {
-            setFinalArrData(schoolDetails.filter(item => item.school.includes("new-horizon-gurukul")))
+            setFinalArrData(schoolDetails.filter(item => item.hasOwnProperty("school") && get(item, "school").includes("new-horizon-gurukul")))
         } else if (pathname.toLowerCase() === "cisb") {
-            setFinalArrData(schoolDetails.filter(item => item.name.toLowerCase().includes('cis')))
+            setFinalArrData(schoolDetails.filter(item => get(item, "name").toLowerCase().includes("cis")))
         } else if (pathname.toLowerCase() === "new-horizon-international-school") {
-            setFinalArrData(schoolDetails.filter(item => item.school.includes('new-horizon-international-school')))
+            setFinalArrData(schoolDetails.filter(item => item.hasOwnProperty("school") && get(item, "school").includes("new-horizon-international-school")))
         } else {
             setFinalArrData(schoolDetails);
         }
@@ -133,11 +141,11 @@ const SchoolGoods = () => {
         }
 
         if (pathname.toLowerCase() === "new-horizon-gurukul") {
-            schoolDetailsData = schoolDetails.filter(item => item.school.includes("new-horizon-gurukul"));
+            schoolDetailsData = schoolDetails.filter(item => item.hasOwnProperty("school") && get(item, "school").includes("new-horizon-gurukul"));
         } else if (pathname.toLowerCase() === "cisb") {
-            schoolDetailsData = schoolDetails.filter(item => item.name.toLowerCase().includes('cis'));
+            schoolDetailsData = schoolDetails.filter(item => get(item, "name").toLowerCase().includes("cis"));
         } else if (pathname.toLowerCase() === "new-horizon-international-school") {
-            schoolDetailsData = schoolDetails.filter(item => item.school.includes('new-horizon-international-school'));
+            schoolDetailsData = schoolDetails.filter(item => item.hasOwnProperty("school") && get(item, "school").includes("new-horizon-international-school"));
         }
 
         if (priceFilter === "lowToHigh") {
@@ -152,22 +160,26 @@ const SchoolGoods = () => {
             schoolDetailsData = schoolDetailsData.sort((a, b) => (a.url > b.url ? -1 : 1));
         }
 
-        if (topFilterValue.gender.includes("boys", "girls")) {
-            schoolDetailsData = schoolDetails;
-        } else if (topFilterValue.gender.includes("boys")) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.gender.includes("boys"));
-        } else if (topFilterValue.gender.includes("girls")) {
-            schoolDetailsData = schoolDetailsData.filter(item => !item.gender.includes("boys"));
+        if (topFilterValue.hasOwnProperty('gender')) {
+            if (topFilterValue && topFilterValue.gender && topFilterValue.gender.includes("boys")) {
+                schoolDetailsData = schoolDetailsData.filter(item => item && item.gender && item.gender.includes("boys"));
+            } else if (topFilterValue && topFilterValue.gender && topFilterValue.gender.includes("girls")) {
+                schoolDetailsData = schoolDetailsData.filter(item => item && item.gender && !item.gender.includes("boys"));
+            } else if (get(topFilterValue, 'gender').includes("boys", "girls")) {
+                schoolDetailsData = schoolDetails;
+            }
         }
 
-        if (topFilterValue.grade.includes("nhg_1")) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.grade.includes("nhg_1"));
-        } else if (topFilterValue.grade.includes("nhg_2")) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.grade.includes("nhg_2"));
-        } else if (topFilterValue.grade.includes("nhg_3")) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.grade.includes("nhg_3"));
-        } else if (topFilterValue.grade.includes("nhg_4")) {
-            schoolDetailsData = schoolDetailsData.filter(item => item.grade.includes("nhg_4"));
+        if (topFilterValue.hasOwnProperty('grade')) {
+            if (get(topFilterValue, "grade").includes("nhg_1")) {
+                schoolDetailsData = schoolDetailsData.filter(item => item && item.grade && item.grade.includes("nhg_1"));
+            } else if (get(topFilterValue, "grade").includes("nhg_2")) {
+                schoolDetailsData = schoolDetailsData.filter(item => item && item.grade && item.grade.includes("nhg_2"));
+            } else if (get(topFilterValue, "grade").includes("nhg_3")) {
+                schoolDetailsData = schoolDetailsData.filter(item => item && item.grade && item.grade.includes("nhg_3"));
+            } else if (get(topFilterValue, "grade").includes("nhg_4")) {
+                schoolDetailsData = schoolDetailsData.filter(item => item && item.grade && item.grade.includes("nhg_4"));
+            }
         }
 
         schoolDetailsData.forEach((item, index) => {

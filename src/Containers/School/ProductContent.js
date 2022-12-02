@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { InputNumber, message, Select } from 'antd';
 import ReactImageMagnify from '@blacklab/react-image-magnify';
 import { useNavigate } from 'react-router-dom';
+import { get } from 'lodash'
 
 import { schoolDetails } from './Utils';
 import axios from 'axios';
@@ -48,7 +49,7 @@ const ProductContent = ({
                 id: 1,
                 quantity: 1,
                 total: data.offerPrice,
-                selectedSize: data.sizeOptions[0]
+                selectedSize: data && data.sizeOptions && data.sizeOptions[0]
             }
         }
 
@@ -60,12 +61,13 @@ const ProductContent = ({
                 var { [Object.keys(data).pop()]: lastItem } = data;
                 data = lastItem;
             }
+
             bodyData = {
                 ...prodData,
                 id: data.id + 1,
                 quantity: 1,
                 total: data.offerPrice,
-                selectedSize: data.sizeOptions[0]
+                selectedSize: data && data.sizeOptions && data.sizeOptions[0]
             }
         }
 
@@ -107,9 +109,9 @@ const ProductContent = ({
     return (
         <div className='product_modal'>
             <div className='d-flex'>
-                <div className={selectedData.imageArr.length ? 'd-flex imageArr' : "d-flex"}>
+                <div className={selectedData.hasOwnProperty("imageArr") && get(selectedData, "imageArr").length ? 'd-flex imageArr' : "d-flex"}>
                     <div>
-                        {selectedData.imageArr.map((item, index) => {
+                        {selectedData.hasOwnProperty("imageArr") && get(selectedData, "imageArr").map((item, index) => {
                             return (
                                 <div
                                     key={index}
@@ -213,14 +215,14 @@ const ProductContent = ({
                         <div className='d-flex' style={{ marginTop: "3rem" }}>
                             <div className='button-design size'>Size:</div>
                             <Select
-                                defaultValue={selectedData.sizeOptions[0]}
+                                defaultValue={selectedData.hasOwnProperty("sizeOptions") && get(selectedData, "sizeOptions[0]")}
                                 style={{
                                     width: 120,
                                 }}
                                 onChange={handleChange}
                                 placeholder="Please select"
                             >
-                                {selectedData.sizeOptions.map((item, index) => (
+                                {selectedData.hasOwnProperty("sizeOptions") && get(selectedData, "sizeOptions").map((item, index) => (
                                     <Option value={item}>{item}</Option>
                                 ))}
                             </Select>

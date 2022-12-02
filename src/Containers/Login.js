@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = ({ type = "" }) => {
 
-    console.log("type", type)
     const Navigate = useNavigate();
     const isLoginStatus = JSON.parse(localStorage.getItem("login"));
 
@@ -16,7 +15,7 @@ const Login = ({ type = "" }) => {
     }, [isLoginStatus, Navigate, type])
 
     const handleSubmit = (formProps) => {
-        axios.post("http://localhost:5000/api/auth/login", {
+        axios.post("http://localhost:8000/api/auth/login", {
             ...formProps
         }).then((res) => {
             localStorage.setItem(

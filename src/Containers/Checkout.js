@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Divider, message, Modal, Radio, Steps, Table } from 'antd';
 import { UserOutlined, MenuOutlined, DeleteFilled } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
@@ -133,7 +133,6 @@ const Checkout = () => {
     const handlePayment = () => {
         axios.post('http://localhost:3000/payNow', `email=manojkumar%40gmail.com&phone=9898786832&amount=${total}`)
             .then((res) => {
-                console.log('res.data', res.data)
                 if (res.data) {
                     setHTMLstate(res.data);
                     setHTMLcontent(res.data);
@@ -223,7 +222,6 @@ const Checkout = () => {
                     </div>
                 )
             case 2:
-                console.log("tableData", tableData)
                 return (
                     <div style={{ color: "#978f8f" }} className='order-summary'>
                         <div>
