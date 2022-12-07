@@ -7,7 +7,7 @@ import axios from 'axios';
 import Register from './Register';
 import Login from './Login';
 import AddressBook from './Accounts/AddressBook';
-import { setHTMLcontent } from '../features/counter/htmlSlice';
+// import { setHTMLcontent } from '../features/counter/htmlSlice';
 import Iframe from '../Components/Iframe';
 
 const { Step } = Steps;
@@ -135,7 +135,7 @@ const Checkout = () => {
             .then((res) => {
                 if (res.data) {
                     setHTMLstate(res.data);
-                    setHTMLcontent(res.data);
+                    // setHTMLcontent(res.data);
                     // Navigate("/payNow");
                 }
             })

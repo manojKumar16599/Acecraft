@@ -26,7 +26,6 @@ const Cart = () => {
         Object.keys(cartData).forEach(subData => {
             const data = cartData[subData];
             // const cal = data.actualPrice * data.quantity;
-            console.log("data useEffect", data)
             sum += parseInt(data.offerPrice);
             tax += ((data.actualPrice * data.quantity) / 100) * 3
         });
@@ -55,7 +54,7 @@ const Cart = () => {
                 ...cartData[`product_${id}`],
                 quantity: type === "increment" ? count + 1 : count - 1,
                 // actualPrice: type === "increment" ? cartData[`product_${id}`].actualPrice + cartData[`product_${id}`].actualPrice : cartData[`product_${id}`].actualPrice - cartData[`product_${id}`].actualPrice,
-                offerPrice: type === "increment" ? cartData[`product_${id}`].offerPrice + cartData[`product_${id}`].price : cartData[`product_${id}`].offerPrice - cartData[`product_${id}`].price,
+                offerPrice: type === "increment" ? cartData && cartData[`product_${id}`] && (cartData[`product_${id}`].offerPrice + cartData[`product_${id}`].price) : cartData && cartData[`product_${id}`] && cartData[`product_${id}`].offerPrice - cartData[`product_${id}`].price,
                 // total: type === "increment" ? cartData[`product_${id}`].total * count : cartData[`product_${id}`].total / (count + 1)
             }
         }

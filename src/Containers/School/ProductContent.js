@@ -54,7 +54,7 @@ const ProductContent = ({
         }
 
         if (Object.keys(products.value).length) {
-            if (Object.keys(products.value).length === 1) {
+            if (Object.keys(products.value).length === 1 && products && products.value && !products.value.hasOwnProperty("product_1")) {
                 data = products.value['product_1'];
             } else {
                 data = products.value;
