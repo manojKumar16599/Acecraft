@@ -110,10 +110,16 @@ const Cart = () => {
                             <div className='d-flex justify-content-between w-100'>
                                 <div className='info'>
                                     <h3>{data.name}</h3>
-                                    <div><strong>Size:</strong> {data.selectedSize}</div>
+                                    {data.sizeOptions
+                                        ? <div><strong>Size:</strong> {data.sizeOptions && data.sizeOptions[0]}</div>
+                                        : <div>
+                                            <div><strong>Length:</strong> {data.lengthOptions && data.lengthOptions[0]}</div>
+                                            <div><strong>Waist:</strong> {data.waistOptions && data.waistOptions[0]}</div>
+                                        </div>
+                                    }
                                 </div>
                                 <div>
-                                    {(productCount > 1 || data.quantity > 1) &&
+                                    {(data.quantity > 1) &&
                                         <MinusOutlined
                                             className='c-pointer'
                                             onClick={() => updateProducts('decrement', data.quantity, data.id)}
